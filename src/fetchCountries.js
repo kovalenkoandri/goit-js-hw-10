@@ -12,15 +12,43 @@ export function fetchCountries(name) {
     .then(response => response.json())
     .then(allcountries => {
       if (allcountries.length === 1) {
+        countryList.remove();
+        console.log(allcountries);
         const countryFlagThumb = document.createElement('div');
         const countryFlag = document.createElement('img');
         const countryName = document.createElement('h2');
+        const countryNameBr = document.createElement('br');
+        const countryCapital = document.createElement('h3');
+        const countryCapitalValue = document.createElement('span');
+        const countryCapitalValueBr = document.createElement('br');
+        const countryPopulation = document.createElement('h3');
+        const countryPopulationValue = document.createElement('span');
+        const countryPopulationValueBr = document.createElement('br');
+        const countryLanguages = document.createElement('h3');
+        const countryLanguagesValue = document.createElement('span');
         countryFlagThumb.appendChild(countryFlag);
-        countryName.innerText = allcountries[0].name.official;
         countryFlag.src = allcountries[0].flags.svg;
-        countryName.style.cssText = `
+        countryName.innerText = allcountries[0].name.official;
+        countryCapital.innerText = `Capital: `;
+        countryCapitalValue.innerText = allcountries[0].capital;
+        countryPopulation.innerText = `Population: `;
+        countryPopulationValue.innerText = allcountries[0].population;
+        // let acum = '';
+        // for (const value of Object.values(allcountries[0].languages)) {
+        //     acum += value + ', ';
+        //   } //ancient way
+        // Object.values(allcountries[0].languages).forEach((value) => acum += value + ', '); // old way
+        // const countryLanguagesValueInnerText = acum.replace(/(, )$/, ''); //long way
+        countryLanguages.innerText = `Languages: `;
+        countryLanguagesValue.innerText = Object.values(
+          allcountries[0].languages
+        )
+          .reduce((acum, value) => (acum += value + ', '), [])
+          .replace(/, $/, '');
+        countryFlagThumb.style.cssText = `
+        width: 25px;
+        height: 25px;
         display: inline-block;
-        margin-left: 10px;
         `;
         countryFlag.style.cssText = `
         display: block;
@@ -29,13 +57,36 @@ export function fetchCountries(name) {
         object-fit: contain;
         margin-top: 5px;
         `;
-        countryFlagThumb.style.cssText = `
-        width: 25px;
-        height: 25px;
+        countryName.style.cssText = `
         display: inline-block;
+        margin: 0;
+        margin-left: 10px;
         `;
-        console.log(allcountries[0].flags);
-        countryInfo.append(countryFlagThumb, countryName);
+        countryCapital.style.cssText = `
+        display: inline-block;
+        white-space: pre-wrap;
+        `;
+        countryPopulation.style.cssText = `
+        display: inline-block;
+        white-space: pre-wrap;
+        `;
+        countryLanguages.style.cssText = `
+        display: inline-block;
+        white-space: pre-wrap;
+        `;
+        countryInfo.append(
+          countryFlagThumb,
+          countryName,
+          countryNameBr,
+          countryCapital,
+          countryCapitalValue,
+          countryCapitalValueBr,
+          countryPopulation,
+          countryPopulationValue,
+          countryPopulationValueBr,
+          countryLanguages,
+          countryLanguagesValue
+        );
       }
     });
 }
