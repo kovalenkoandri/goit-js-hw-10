@@ -1,4 +1,5 @@
 import { refs } from './refs.js';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const REST_COUNTRIES = `https://restcountries.com/v3.1/name/`;
 const searchParams = new URLSearchParams({
   fields: 'name,capital,population,flags,languages',
@@ -8,10 +9,14 @@ export function fetchCountries(name) {
     `${REST_COUNTRIES}${name}?${searchParams}`
     // `https://restcountries.com/v3.1/name/${name}?fields=name,capital,population,flags,languages`
   )
-    .then(response => response.json())
+    .then(response => {
+      console.log(response);
+      return response.json();
+    })
     .then(allcountries => {
+      console.log(allcountries);
       if (allcountries.length === 1) {
-        refs.countryList.remove();
+        refs.countryList.innerHTML = '';
         refs.countryFlagThumb.appendChild(refs.countryFlag);
         refs.countryFlag.src = allcountries[0].flags.svg;
         refs.countryName.innerText = allcountries[0].name.official;
@@ -39,11 +44,40 @@ export function fetchCountries(name) {
           refs.countryLanguagesValue
         );
       }
-      else if (allcountries.length >= 2 && allcountries.length <= 10) {
-        console.log(allcountries);
-        refs.countryFlagThumb.appendChild(refs.countryFlag);
-        refs.countryFlag.src = allcountries[0].flags.svg;
-         refs.countryList.append(refs.countryFlagThumb);
+      if (allcountries.length >= 2 && allcountries.length <= 10) {
+        refs.countryInfo.innerHTML = '';
+        refs.countryList.style = `
+                margin: 0;
+                padding: 0;`;
+        refs.countryList.insertAdjacentHTML(
+          'afterbegin',
+          allcountries
+            .map(
+              element =>
+                `<div style="
+                ">
+                <img style="
+                vertical-align: top;
+                display: inline-block;
+                object-fit: contain;
+                margin-right: 5px;
+                width: 25px;
+                height: 25px;
+                object-fit: contain;"
+                src="${element.flags.svg}" 
+                alt="${element.name.official}"><span>${element.name.official}</span></div>`
+            )
+            .join('')
+        );
+      }
+      if (allcountries.length > 10) {
+        refs.countryList.innerHTML = '';
+        Notify.info(
+          'Too many matches found. Please enter a more specific name.'
+        );
+      }
+      if (allcountries.status === 404) {
+        Notify.info('Oops, there is no country with that name');
       }
     });
 }
